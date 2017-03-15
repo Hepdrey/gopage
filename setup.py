@@ -4,16 +4,12 @@ from setuptools import setup
 打包的用的setup必须引入
 """
 
-VERSION = '2.0'
-
-with open('README.md') as f:
-    long_description = f.read()
+VERSION = '2.2'
 
 setup(
     name='gopage',  # 文件名
     version=VERSION,  # 版本(每次更新上传Pypi需要修改)
     description="Py3 version",
-    long_description=long_description,  # 放README.md文件,方便在Pypi页展示
     classifiers=[],
     keywords='python google crawler',  # 关键字
     author='xgeric',  # 用户名

@@ -65,7 +65,7 @@ It should look like this:
   'title': 'A conversation with Professors Deyi Li and Jie Tang'}]
 ```
 
-I also added a simple email address filter to parser. It helps you to findout all snippets containing email addresses.
+I also added a simple email address filter to parser. It helps findout all snippets containing email addresses, and normalize various email address formats.
 
 ```python
 esnippets = parser.filt_email(snippets)
