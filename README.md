@@ -6,6 +6,14 @@ Gopage is a Google search page crawler. It provides concise APIs to download Goo
 
 
 
+## Installation
+
+```
+pip install gopage
+```
+
+
+
 ## APIs
 
 ***Crawler*** is responsible for crawling Google search page, given a query sentence. ***Parser*** aims at parsing the html content of a Google search page into a Python list, in which each element is a dict consisting of 'title' and 'content' of the corresponding Google snippet. 
@@ -100,6 +108,8 @@ esnippets = parser.filt_email(snippets)
 
 * snippets [list]: Snippets extracted by parser.parse.
 * @return snippets [list]
+
+
 
 
 

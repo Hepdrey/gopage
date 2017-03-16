@@ -14,7 +14,11 @@ def parse(gpage):
 
     soup = bs4.BeautifulSoup(gpage, 'html.parser')
     snippets = soup.find_all('div', class_='rc')
-    return [parse_snippet(s) for s in snippets]
+    snippets = [parse_snippet(s) for s in snippets]
+    nsnippets = len(snippets)
+    for i in range(nsnippets):
+        snippets[i]['pos'] = i + 1
+    return snippets
 
 
 def filt_email(snippets):

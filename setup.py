@@ -4,7 +4,7 @@ from setuptools import setup
 打包的用的setup必须引入
 """
 
-VERSION = '2.2'
+VERSION = '2.3'
 
 setup(
     name='gopage',  # 文件名
