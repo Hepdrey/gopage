@@ -1,4 +1,5 @@
 # encoding: utf-8
+from gopage import util
 import requests
 
 
@@ -53,6 +54,7 @@ def download_page(url, useproxy=True, verbose=True, maxtry=2, timeout=5):
         return retry()
 
 
+@util.cache('text')
 def search(query, useproxy=True, verbose=True, maxtry=5, timeout=5):
     query = query.replace(' ', '+')
     url = 'https://www.google.com/search?hl=en&safe=off&q={}'.format(query)
@@ -61,6 +63,6 @@ def search(query, useproxy=True, verbose=True, maxtry=5, timeout=5):
 
 if __name__ == '__main__':
     with open('test.html', 'w', encoding='utf-8') as wf:
-        page = search('jie tang')
+        page = search('jie tang', usecache=True, cache='jietang.html')
         wf.write(page)
         # page = requests.get('http://baidu.com')

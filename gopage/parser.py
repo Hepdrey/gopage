@@ -1,7 +1,9 @@
 import bs4
 from pprint import pprint
+import util
 
 
+@util.cache('json')
 def parse(gpage):
 
     def parse_snippet(snippet):
@@ -27,11 +29,11 @@ def filt_email(snippets):
         import re
         emails = []
         rough_pattern = re.compile(
-            '[a-z0-9-\._]+(@| at | \[at\] |\[at\]| (at) |(at)| @ )(([a-z0-9\-]+)(\.| dot | \. | \[dot\] ))+([a-z]+)')
+            '[a-z0-9-\._]+(@| at | \[at\] |\[at\]| \(at\) |\(at\)| @ )(([a-z0-9\-]+)(\.| dot | \. | \[dot\] ))+([a-z]+)')
         rough_match = rough_pattern.finditer(snippet['content'])
         for rm in rough_match:
             pattern = re.compile(
-                '(([a-z0-9-_]+)(\.| dot | \. )?)+(@| at | \[at\] |\[at\]| (at) |(at)| @ )(([a-z0-9\-]+)(\.| dot | \. | \[dot\] ))+([a-z]+)')
+                '(([a-z0-9-_]+)(\.| dot | \. )?)+(@| at | \[at\] |\[at\]| \(at\) |\(at\)| @ )(([a-z0-9\-]+)(\.| dot | \. | \[dot\] ))+([a-z]+)')
             match = pattern.finditer(rm.group())
             for m in match:
                 emails.append(m.group().replace(' dot ', '.').replace(
@@ -46,7 +48,7 @@ def filt_email(snippets):
 
 
 if __name__ == '__main__':
-    with open('test.html', encoding='utf-8') as f:
+    with open('jietang.html', encoding='utf-8') as f:
         gpage = f.read()
     items = parse(gpage)
     pprint(items)
