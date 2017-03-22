@@ -1,5 +1,7 @@
 # encoding: utf-8
 from gopage import util
+from gopage import parser
+import random
 import requests
 
 
@@ -13,18 +15,18 @@ class Proxy:
         cls.PROXIES = [p.strip() for p in proxies]
 
     @classmethod
-    def pop_proxy(cls):
-        if cls.PROXIES:
-            cls.PROXIES = cls.PROXIES[1:]
+    def pop_proxy(cls, proxy_ip):
+        if cls.PROXIES and proxy_ip in cls.PROXIES:
+            cls.PROXIES.remove(proxy_ip)
 
     @classmethod
     def choose_proxy(cls):
         if not cls.PROXIES:
             cls.add_proxies()
-        return cls.PROXIES[0]
+        return random.choice(cls.PROXIES)
 
 
-def download_page(url, useproxy=True, verbose=True, maxtry=2, timeout=5):
+def download_page(url, useproxy=True, verbose=True, maxtry=2, timeout=5, checkpage=True):
 
     def retry():
         if verbose:
@@ -44,13 +46,17 @@ def download_page(url, useproxy=True, verbose=True, maxtry=2, timeout=5):
             'http': proxy_ip
         }
         content = requests.get(url, proxies=proxy, headers=header).text
+        try:
+            snippets = parser.parse(content)
+        except Exception:
+            raise Exception
         if verbose:
             print('[OK] {} -> {}'.format(proxy_ip, url))
         return content
 
     except Exception as e:
         if useproxy:
-            Proxy.pop_proxy()
+            Proxy.pop_proxy(proxy_ip)
         return retry()
 
 
@@ -62,7 +68,13 @@ def search(query, useproxy=True, verbose=True, maxtry=5, timeout=5):
 
 
 if __name__ == '__main__':
-    with open('test.html', 'w', encoding='utf-8') as wf:
-        page = search('jie tang', usecache=True, cache='jietang.html')
-        wf.write(page)
-        # page = requests.get('http://baidu.com')
+    names = [
+        'jie tang',
+        'jiawei han',
+        'thorsten joachims'
+    ]
+    for name in names:
+        with open('{}.html'.format(name), 'w', encoding='utf-8') as wf:
+            page = search(name, usecache=True, cache='{}.html'.format(name.replace(' ', '')))
+            wf.write(page)
+            # page = requests.get('http://baidu.com')
