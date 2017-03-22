@@ -7,16 +7,15 @@ def cache(ctype=''):
     from os.path import exists
 
     def decorator(func):
+        def clean(kw, key, default=None):
+            if key in kw:
+                return kw.pop(key)
+            return default
+
         @functools.wraps(func)
         def wrapper(*args, **kw):
-            verbose = True
-            usecache = True
-            if 'cverbose' in kw:
-                verbose = kw['cverbose']
-                kw.pop('cverbose')
-            if 'usecache' in kw:
-                usecache = kw['usecache']
-                kw.pop('usecache')
+            verbose = clean(kw, 'cverbose', True)
+            usecache = clean(kw, 'usecache', True)
             if 'cache' in kw and not kw['cache']:
                 kw.pop('cache')
                 return func(*args, **kw)
@@ -34,10 +33,8 @@ def cache(ctype=''):
                     with open(kw['cache'], encoding='utf-8') as rf:
                         return rf.read()
             # create cache
-            cachepath = None
-            if 'cache' in kw:
-                cachepath = kw['cache']
-                kw.pop('cache')
+            dbkey = clean(kw, 'dbkey', None)
+            cachepath = clean(kw, 'cache', None)
             ret = func(*args, **kw)
             if cachepath:
                 if verbose:
@@ -54,3 +51,24 @@ def cache(ctype=''):
             return ret
         return wrapper
     return decorator
+
+
+if __name__ == '__main__':
+    import util
+    import json
+
+
+    @util.cache('text')
+    def test_text():
+        return 'hi'
+
+
+    @util.cache('json')
+    def test_json():
+        return {
+            '1': 1
+        }
+
+
+    test_json(usecache=True, cache='test_json.json')
+    test_text(usecache=True, cache='test_text.json')
