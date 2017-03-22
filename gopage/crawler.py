@@ -48,6 +48,8 @@ def download_page(url, useproxy=True, verbose=True, maxtry=2, timeout=5, checkpa
         content = requests.get(url, proxies=proxy, headers=header).text
         try:
             snippets = parser.parse(content)
+            if not snippets:
+                raise Exception
         except Exception:
             raise Exception
         if verbose:
