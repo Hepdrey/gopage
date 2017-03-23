@@ -26,7 +26,7 @@ class Proxy:
         return random.choice(cls.PROXIES)
 
 
-def download_page(url, useproxy=True, verbose=True, maxtry=2, timeout=5, checkpage=True):
+def download_page(url, useproxy=True, verbose=True, maxtry=2, timeout=5):
 
     def retry():
         if verbose:
@@ -46,12 +46,7 @@ def download_page(url, useproxy=True, verbose=True, maxtry=2, timeout=5, checkpa
             'http': proxy_ip
         }
         content = requests.get(url, proxies=proxy, headers=header).text
-        try:
-            snippets = parser.parse(content)
-            if not snippets:
-                raise Exception
-        except Exception:
-            raise Exception
+
         if verbose:
             print('[OK] {} -> {}'.format(proxy_ip, url))
         return content
@@ -63,10 +58,15 @@ def download_page(url, useproxy=True, verbose=True, maxtry=2, timeout=5, checkpa
 
 
 @util.cache('text')
-def search(query, useproxy=True, verbose=True, maxtry=5, timeout=5):
+def search(query, useproxy=True, verbose=True, maxtry=5, timeout=5, checkpage=True):
     query = query.replace(' ', '+')
     url = 'https://www.google.com/search?hl=en&safe=off&q={}'.format(query)
-    return download_page(url, useproxy, verbose, maxtry, timeout)
+    page = download_page(url, useproxy, verbose, maxtry, timeout)
+    if checkpage:
+        snippets = parser.parse(page)
+        if not snippets:
+            return None
+    return page
 
 
 if __name__ == '__main__':
@@ -77,6 +77,7 @@ if __name__ == '__main__':
     ]
     for name in names:
         with open('{}.html'.format(name), 'w', encoding='utf-8') as wf:
-            page = search(name, usecache=True, cache='{}.html'.format(name.replace(' ', '')))
+            page = search(name, usecache=True,
+                          cache='{}.html'.format(name.replace(' ', '')))
             wf.write(page)
             # page = requests.get('http://baidu.com')
