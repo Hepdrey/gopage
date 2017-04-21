@@ -1,8 +1,11 @@
 # encoding: utf-8
-from gopage import util
-from gopage import parser
+# from gopage import util
+# from gopage import parser
+import util
+import parser
 import random
 import requests
+from pprint import pprint
 
 
 class Proxy:
@@ -10,8 +13,10 @@ class Proxy:
 
     @classmethod
     def add_proxies(cls):
-        url = 'http://erwx.daili666.com/ip/?tid=558045424788230&num=20&foreign=only'
+        # url = 'http://erwx.daili666.com/ip/?tid=558045424788230&num=20&foreign=only'
+        url = 'http://dev.kuaidaili.com/api/getproxy/?orderid=969077660455841&num=100&area=%E5%9B%BD%E5%A4%96&b_pcchrome=1&b_pcie=1&b_pcff=1&protocol=2&method=2&an_an=1&an_ha=1&sep=2'
         proxies = requests.get(url).text.splitlines()
+        pprint(proxies)
         cls.PROXIES = [p.strip() for p in proxies]
 
     @classmethod
@@ -26,7 +31,7 @@ class Proxy:
         return random.choice(cls.PROXIES)
 
 
-def download_page(url, useproxy=True, verbose=True, maxtry=2, timeout=5):
+def download_page(url, useproxy=False, verbose=True, maxtry=2, timeout=5, checkpage=False):
 
     def retry():
         if verbose:
@@ -36,17 +41,26 @@ def download_page(url, useproxy=True, verbose=True, maxtry=2, timeout=5):
     if maxtry <= 0:
         return None
     try:
+        proxy = None
         proxy_ip = 'localhost'
         if useproxy:
             proxy_ip = Proxy.choose_proxy()
+            proxy = {
+                'http': proxy_ip,
+                'https': proxy_ip
+            }
         header = {
             'user-agent': 'Mozilla/5.0 (Windows NT 6.1 WOW64 rv:23.0) Gecko/20130406 Firefox/23.0'
         }
-        proxy = {
-            'http': proxy_ip
-        }
+        # proxy_ip = '177.114.74.104:8080'
         content = requests.get(url, proxies=proxy, headers=header).text
-
+        if checkpage:
+            try:
+                snippets = parser.parse(content)
+                if not snippets:
+                    raise Exception
+            except:
+                raise Exception
         if verbose:
             print('[OK] {} -> {}'.format(proxy_ip, url))
         return content
@@ -56,16 +70,16 @@ def download_page(url, useproxy=True, verbose=True, maxtry=2, timeout=5):
             Proxy.pop_proxy(proxy_ip)
         return retry()
 
+@util.cache('text')
+def download_page_cache(url, useproxy=False, verbose=True, maxtry=2, timeout=5, checkpage=False):
+    return download_page(url, useproxy=useproxy, verbose=verbose, maxtry=maxtry, timeout=timeout, checkpage=checkpage)
+
 
 @util.cache('text')
-def search(query, useproxy=True, verbose=True, maxtry=5, timeout=5, checkpage=True):
+def search(query, useproxy=True, verbose=True, maxtry=5, timeout=5):
     query = query.replace(' ', '+')
     url = 'https://www.google.com/search?hl=en&safe=off&q={}'.format(query)
     page = download_page(url, useproxy, verbose, maxtry, timeout)
-    if checkpage:
-        snippets = parser.parse(page)
-        if not snippets:
-            return None
     return page
 
 
@@ -75,9 +89,10 @@ if __name__ == '__main__':
         'jiawei han',
         'thorsten joachims'
     ]
-    for name in names:
-        with open('{}.html'.format(name), 'w', encoding='utf-8') as wf:
-            page = search(name, usecache=True,
-                          cache='{}.html'.format(name.replace(' ', '')))
-            wf.write(page)
-            # page = requests.get('http://baidu.com')
+    # for name in names:
+    #     with open('{}.html'.format(name), 'w', encoding='utf-8') as wf:
+    #         page = search(name, usecache=False,
+    #                       cache='{}.html'.format(name.replace(' ', '')))
+    #         wf.write(page)
+    #         # page = requests.get('http://baidu.com')
+    page = download_page_cache('http://baidu.com', usecache=True, cache='baidu.html')

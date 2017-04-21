@@ -7,16 +7,20 @@ import util
 def parse(gpage):
 
     def parse_snippet(snippet):
-        title = snippet.h3.a.contents[0]
-        content = ''.join(snippet.find('span', class_='st').strings)
-        return {
-            'title': title,
-            'content': content
-        }
+        try:
+            title = ' '.join(snippet.h3.a.strings)
+            content = ''.join(snippet.find('span', class_='st').strings)
+            return {
+                'title': title,
+                'content': content
+            }
+        except Exception:
+            return None
 
     soup = bs4.BeautifulSoup(gpage, 'html.parser')
     snippets = soup.find_all('div', class_='rc')
     snippets = [parse_snippet(s) for s in snippets]
+    snippets = [s for s in snippets if s]
     nsnippets = len(snippets)
     for i in range(nsnippets):
         snippets[i]['pos'] = i + 1

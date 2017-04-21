@@ -1,6 +1,12 @@
 import functools
 
 
+def mkdir(dirpath):
+    import os
+    if not os.path.isdir(dirpath):
+        os.mkdir(dirpath)
+
+
 def cache(ctype=''):
     import json
     import pickle
