@@ -9,7 +9,7 @@ Gopage is a Google search page crawler. It provides concise APIs to download Goo
 ## Installation
 
 ```
-pip install gopage
+pip install git+https://github.com/xgeric/gopage
 ```
 
 
