@@ -1,6 +1,6 @@
 import bs4
 from pprint import pprint
-import util
+from gopage import util
 
 
 @util.cache('json')

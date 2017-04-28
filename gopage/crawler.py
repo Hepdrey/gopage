@@ -1,10 +1,8 @@
 # encoding: utf-8
-# from gopage import util
-# from gopage import parser
-import util
-import parser
 import random
 import requests
+from gopage import util
+from gopage import parser
 from pprint import pprint
 
 
@@ -70,6 +68,7 @@ def download_page(url, useproxy=False, verbose=True, maxtry=2, timeout=5, checkp
             Proxy.pop_proxy(proxy_ip)
         return retry()
 
+
 @util.cache('text')
 def download_page_cache(url, useproxy=False, verbose=True, maxtry=2, timeout=5, checkpage=False):
     return download_page(url, useproxy=useproxy, verbose=verbose, maxtry=maxtry, timeout=timeout, checkpage=checkpage)
@@ -95,4 +94,5 @@ if __name__ == '__main__':
     #                       cache='{}.html'.format(name.replace(' ', '')))
     #         wf.write(page)
     #         # page = requests.get('http://baidu.com')
-    page = download_page_cache('http://baidu.com', usecache=True, cache='baidu.html')
+    page = download_page_cache(
+        'http://baidu.com', usecache=True, cache='baidu.html')
