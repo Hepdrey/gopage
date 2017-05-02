@@ -39,7 +39,6 @@ def cache(ctype=''):
                     with open(kw['cache'], encoding='utf-8') as rf:
                         return rf.read()
             # create cache
-            dbkey = clean(kw, 'dbkey', None)
             cachepath = clean(kw, 'cache', None)
             ret = func(*args, **kw)
             if cachepath:
@@ -61,20 +60,16 @@ def cache(ctype=''):
 
 if __name__ == '__main__':
     import util
-    import json
-
 
     @util.cache('text')
     def test_text():
         return 'hi'
-
 
     @util.cache('json')
     def test_json():
         return {
             '1': 1
         }
-
 
     test_json(usecache=True, cache='test_json.json')
     test_text(usecache=True, cache='test_text.json')
