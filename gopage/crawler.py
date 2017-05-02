@@ -81,9 +81,13 @@ def search(query, useproxy=False, verbose=True, maxtry=5, timeout=5, stype='page
         'page': 'https://www.google.com/search?hl=en&safe=off&q=',
         'image': 'https://www.google.com/search?tbm=isch&source=hp&btnG=Search+Images&biw=1920&bih=1075&q='
     }
-    url = '{}{}'.format(stype2url[stype], query)
-    page = download_page(url, useproxy, verbose, maxtry, timeout)
-    return page
+    try:
+        url = '{}{}'.format(stype2url[stype], query)
+        page = download_page(url, useproxy, verbose, maxtry, timeout)
+        return page
+    except KeyError:
+        print('@gopage.crawler.search: unrecognized search type:', stype)
+        return None
 
 
 if __name__ == '__main__':
