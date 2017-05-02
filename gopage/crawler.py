@@ -75,7 +75,19 @@ def download_page_cache(url, useproxy=False, verbose=True, maxtry=2, timeout=5, 
 
 
 @util.cache('text')
-def search(query, useproxy=True, verbose=True, maxtry=5, timeout=5):
+def search(query, useproxy=True, verbose=True, maxtry=5, timeout=5, stype='page'):
+    query = query.replace(' ', '+')
+    stype2url = {
+        'page': 'https://www.google.com/search?hl=en&safe=off&q=',
+        'image': 'https://www.google.com/search?tbm=isch&source=hp&btnG=Search+Images&biw=1920&bih=1075&q='
+    }
+    url = '{}{}'.format(stype2url[stype], query)
+    page = download_page(url, useproxy, verbose, maxtry, timeout)
+    return page
+
+
+@util.cache('text')
+def search_image(query, useproxy=True, verbose=True, maxtry=5, timeout=5):
     query = query.replace(' ', '+')
     url = 'https://www.google.com/search?hl=en&safe=off&q={}'.format(query)
     page = download_page(url, useproxy, verbose, maxtry, timeout)
