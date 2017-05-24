@@ -27,6 +27,7 @@ def cache(ctype=''):
                 return func(*args, **kw)
             # read cache
             if usecache and 'cache' in kw and exists(kw['cache']) and getsize(kw['cache']):
+                filepath = kw['cache']
                 if verbose:
                     print('@{} reading cache'.format(func.__name__))
                 if ctype == 'json':
