@@ -10,7 +10,7 @@ def mkdir(dirpath):
 def cache(ctype=''):
     import json
     import pickle
-    from os.path import exists
+    from os.path import exists, getsize
 
     def decorator(func):
         def clean(kw, key, default=None):
@@ -26,22 +26,22 @@ def cache(ctype=''):
                 kw.pop('cache')
                 return func(*args, **kw)
             # read cache
-            if usecache and 'cache' in kw and exists(kw['cache']):
+            if usecache and 'cache' in kw and exists(kw['cache']) and getsize(kw['cache']):
                 if verbose:
                     print('@{} reading cache'.format(func.__name__))
                 if ctype == 'json':
-                    with open(kw['cache']) as rf:
+                    with open(filepath) as rf:
                         return json.load(rf)
                 elif ctype == 'pickle':
-                    with open(kw['cache'], 'rb') as rf:
+                    with open(filepath, 'rb') as rf:
                         return pickle.load(rf)
                 elif ctype == 'text':
-                    with open(kw['cache'], encoding='utf-8') as rf:
+                    with open(filepath, encoding='utf-8') as rf:
                         return rf.read()
             # create cache
             cachepath = clean(kw, 'cache', None)
             ret = func(*args, **kw)
-            if cachepath:
+            if cachepath and ret is not None:
                 if verbose:
                     print('@{} creating cache'.format(func.__name__))
                 if ctype == 'json':
