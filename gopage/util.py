@@ -22,6 +22,7 @@ def cache(ctype=''):
         def wrapper(*args, **kw):
             verbose = clean(kw, 'cverbose', True)
             usecache = clean(kw, 'usecache', True)
+            writecache = clean(kw, 'writecache', True)
             if 'cache' in kw and not kw['cache']:
                 kw.pop('cache')
                 return func(*args, **kw)
@@ -42,7 +43,7 @@ def cache(ctype=''):
             # create cache
             cachepath = clean(kw, 'cache', None)
             ret = func(*args, **kw)
-            if cachepath and ret is not None:
+            if writecache and cachepath and ret is not None:
                 if verbose:
                     print('@{} creating cache'.format(func.__name__))
                 if ctype == 'json':
